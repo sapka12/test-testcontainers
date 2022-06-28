@@ -13,8 +13,6 @@ import scala.io.Source
 
 trait ContainerSpec extends wordspec.AnyWordSpec with ForAllTestContainer with EitherValues with Matchers {
 
-   def dockerContainer(): String
-
   override val container = {
     GenericContainer(
       dockerContainer(),
@@ -23,12 +21,11 @@ trait ContainerSpec extends wordspec.AnyWordSpec with ForAllTestContainer with E
         .forPort(9200)
         .forStatusCodeMatching(response => response == 200 || response == 401)
         .withStartupTimeout(Duration.ofSeconds(10)),
-      env = Map(
-        "discovery.type"         -> "single-node",
-        "xpack.security.enabled" -> "false"
-      )
+      env = Map("discovery.type" -> "single-node")
     )
   }
+
+  def dockerContainer(): String
 
   def runTest() = {
     val result = Source
